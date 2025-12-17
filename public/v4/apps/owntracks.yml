@@ -1,0 +1,46 @@
+captainVersion: 4
+services:
+    $$cap_appname:
+        image: owntracks/frontend
+        environment:
+            SERVER_HOST: srv-captain--$$cap_appname-recorder
+            SERVER_PORT: '80'
+            LISTEN_PORT: '80'
+        restart: unless-stopped
+        volumes:
+            - 'owntracks-ui-config:/usr/share/nginx/html/config'
+        caproverExtra:
+            containerHttpPort: '80'
+    $$cap_appname-recorder:
+        image: owntracks/recorder
+        environment:
+            OTR_PORT: 0
+            OTR_HTTPHOST: srv-captain--$$cap_appname-recorder
+            OTR_HTTPPORT: '80'
+        volumes:
+            - 'owntracks-store:/store'
+        restart: unless-stopped
+        caproverExtra:
+            containerHttpPort: '80'
+            websocketSupport: true
+
+caproverOneClickApp:
+    volumes:
+        owntracks-store:
+        owntracks-ui-config:
+    instructions:
+        start: |-
+            OwnTracks is a system for recording and visualizing location data. This app deploys both the OwnTracks UI and the OwnTracks Recorder backend.
+
+            - The UI will be available on the main app URL.
+            - The Recorder backend will be available on port 80.
+
+            More details:
+            - UI: https://github.com/owntracks/frontend
+            - Recorder: https://github.com/owntracks/recorder
+        end: |-
+            OwnTracks has been successfully deployed at $$cap_appname!
+    displayName: OwnTracks
+    isOfficial: false
+    description: Open-source location logging and visualization. Includes both OwnTracks UI and Recorder backend.
+    documentation: See https://github.com/owntracks/frontend and https://github.com/owntracks/recorder
